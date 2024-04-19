@@ -1,29 +1,38 @@
 import React from "react";
-import {ImageBackground, Text,View,StyleSheet} from 'react-native'
-import { TextInput } from "react-native-gesture-handler";
+import {ImageBackground, Text,View,StyleSheet, Keyboard, Image,  Dimensions} from 'react-native'
 import { SafeAreaView } from "react-native-safe-area-context";
-import {Ionicons} from 'react-native-vector-icons'
 import { useState } from "react"; 
 import axios from "axios";
+import Cabecalho from "../Components/Cabecalho";
+import { FlatList } from "react-native-gesture-handler";
+
+const width = Dimensions.get('window').width
+const IMAGE_WIDTH = width * 0.4
 
 const TelaResultado = ({route, navigation})=>{
    
    const[text,setText] = useState('')
+   const[data,setData] = useState([])
  
+
+
+    
     const escolha = route.params.escolha
-    const link = `api.giphy.com/v1/${escolha}/search`;
+    const link = `https://api.giphy.com/v1/${escolha}/search`;
     console.log(link)
 
-    const solicitar = async ()=>{
+    const solicitar = async (text)=>{
+        Keyboard.dismiss()
         try{
             const resultados = await axios.get(link, {
                 params:{
-                    api_key: "JlJh1BiMz8KrYe37rAsgndGH1aKblC7l",
+                    api_key: 's7Sgl3zSsw6h2jvpnjerqJg7kfuqChlA',
                     q: text,
                     lang: 'pt'
                 }
             })
-            console.log(resultados)
+            console.log(resultados.data.data)
+            setData(resultados.data.data)
         }catch(err){
             console.log(err)
         }
@@ -34,22 +43,25 @@ const TelaResultado = ({route, navigation})=>{
         <ImageBackground source={require('../../assets/HomePage.png')}
         style = {estilo.container}>
             <SafeAreaView>
-                <View style={estilo.cabecalho}>
-                    <Ionicons name ='chevron-back'
-                    size = {40}
-                    color= 'white' 
-                    onPress={()=> navigation.goBack()}
-                    />
-                    <TextInput
-                    placeholder="Pesquisar"
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                    value={text}
-                    onChangeText={(value)=> setText(value)}
-                    style={estilo.input}
-                    />
-                    <Ionicons name = 'search' size={40} color = 'white' onPress={solicitar(text)} />
-                </View>
+                <Cabecalho 
+                    navigation={navigation} 
+                    text={text}
+                    setText={setText}
+                    solicitar={solicitar}
+                />
+                <FlatList
+                    data={data}
+                    numColumns={2}
+                    renderItem={({item})=>{
+                        return(
+                            <View>
+                                <Text>{item.title}</Text>
+                                <Image source={{uri: item.images.preview_gif.url}} style={{width: 200, height: 200}}
+                                />
+                            </View>
+                        )
+                    }}
+                />
             </SafeAreaView>
         </ImageBackground>
     )
@@ -59,15 +71,9 @@ const estilo = StyleSheet.create({
 container:{
         flex:1
 },
-cabecalho:{
-    flexDirection : 'row',
-    justifyContent: 'space-between',
-    marginTop: 20
-},
-input:{
-    backgroundColor:'#fff',
-    flex: 1,
-    borderRadius: 25
+image:{
+    width:IMAGE_WIDTH,
+    height:IMAGE_WIDTH
 }
 })
  
