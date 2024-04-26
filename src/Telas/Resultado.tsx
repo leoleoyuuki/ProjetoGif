@@ -5,6 +5,8 @@ import {useState} from 'react'
 import axios from "axios";
 import Cabecalho from "../components/Cabecalho";
 import API_KEY from "../API_KEY";
+import CabecalhoFlat from "./CabecalhoFlat";
+
 
 const{width} = Dimensions.get('window')
 const IMAGE_WIDTH = width
@@ -14,6 +16,7 @@ const TelaResultado = ({route,navigation}) =>{
     const link = `http://api.giphy.com/v1/${escolha}/search`
     const[text,setText]=useState("")
     const[data,setData]=useState([])
+    const [mostrarInfo, setMostrarInfo] = useState(true)
 
     
     const solicitar = async (text) =>{
@@ -29,6 +32,7 @@ const TelaResultado = ({route,navigation}) =>{
 
             console.log(resultados.data.data)
             setData(resultados.data.data)
+            setMostrarInfo(false)
         }catch(err){
             console.log(err)
         }
@@ -50,6 +54,10 @@ const TelaResultado = ({route,navigation}) =>{
                 <FlatList 
                     data={data}
                     numColumns={2}
+                    ListHeaderComponent={
+                        <CabecalhoFlat 
+                        mostrarCabecalho={mostrarInfo} />
+                    }
                     renderItem={({item})=>{
                         return(
                             <View>
@@ -76,6 +84,15 @@ const estilo = StyleSheet.create({
         width:IMAGE_WIDTH/2,
         height:IMAGE_WIDTH/2,
         margin:5
+    },
+    cabecalhoFlat:{
+        alignItems:'center',
+        margin: 20
+    },
+    txtHeaderFlat:{
+        color:'white',
+        fontSize:18,
+        textAlign:'center'
     }
 })
 export default TelaResultado
