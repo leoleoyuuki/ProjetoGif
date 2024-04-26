@@ -1,46 +1,70 @@
-import React, { useState } from 'react'
-import { Text,View, StyleSheet, Keyboard } from 'react-native'
-import {Ionicons} from 'react-native-vector-icons'
-import { TextInput } from "react-native-gesture-handler";
-import axios from 'axios';
+import React from "react"
+import { View, Text, StyleSheet, TextInput } from 'react-native'
+import { Ionicons } from 'react-native-vector-icons'
 
-const cabecalho = ({navigation,text,setText, solicitar})=> {
+let textoPesquisado = ""
 
 
-  return (
-    <View style={estilo.cabecalho}>
-    <Ionicons name ='chevron-back'
-    size = {40}
-    color= 'white' 
-    onPress={()=> navigation.goBack()}
-    />
-    <TextInput
-    placeholder="Pesquisar"
-    autoCapitalize="none"
-    autoCorrect={false}
-    value={text}
-    onChangeText={(value)=> setText(value)}
-    style={estilo.input}
-    onSubmitEditing={()=> solicitar(text)}
-    />
-    <Ionicons name = 'search' size={40} color = 'white' onPress={()=> solicitar(text)} />
-</View>
-  )
+const Cabecalho = ({navigation,text,setText,solicitar}) => {
+
+
+    return (
+        <View>
+            <View style={estilo.cabecalho}>
+                <Ionicons
+                    name="chevron-back"
+                    size={40}
+                    color='white'
+                    onPress={() => navigation.goBack()}
+                />
+                <TextInput
+                    placeholder="Pesquisar"
+                    style={estilo.input}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    value={text}
+                    onChangeText={(value) => {
+                        setText(value)
+                        if(value === ""){
+                            textoPesquisado = ""
+                        }
+                    }}
+                    onSubmitEditing={() => {
+                        solicitar(text)
+                        textoPesquisado = text
+                    }}
+                />
+                <Ionicons
+                    name='search'
+                    size={35}
+                    color='white'
+                    onPress={()=>{
+                        solicitar(text)
+                        textoPesquisado = text
+                    }}
+                />
+            </View>
+            <View style={textoPesquisado!== "" ?{ display: 'flex'} : {display: 'none'}} >
+                <Text style={{color:'#fff'}}>Listando os resultados de:<Text style={{fontWeight: 'bold', color: '#5499'}}> {textoPesquisado}</Text></Text>
+            </View>
+        </View>
+
+    )
 }
 
 const estilo = StyleSheet.create({
-    container:{
-            flex:1
-    },
     cabecalho:{
-        flexDirection : 'row',
-        justifyContent: 'space-between',
-        marginTop: 20
+        flexDirection:'row',
+        justifyContent:'space-between',
+        marginTop:15
     },
     input:{
-        backgroundColor:'#fff',
-        flex: 1,
-        borderRadius: 25
+        backgroundColor:'white',
+        flex:1,
+        borderRadius:25,
+        fontSize:20,
+        paddingLeft:15
     }
-    })
-export default cabecalho
+})
+
+export default Cabecalho
